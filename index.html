@@ -7,9 +7,11 @@
 <body>
     <div id="app">
         <header>
-            <!--<button id="delete" type="button" @click="delallNote()"> delete all </button>-->
-            <input type="text" @keyup.enter="addNote()" v-model="newNote" placeholder="new note">
-            <button class="addNote" type="button" @click="addNote()"> + </button>
+            <div class="addForm">
+                <!--<button id="deleteall" type="button" @click="delallNote()"> delete all </button>-->
+                <input type="text" @keyup.enter="addNote()" v-model="newNote" placeholder="new note">
+                <button class="addNote" type="button" @click="addNote()"> + </button>
+            </div>
         </header>
         <ul>
             <li v-for="(item, index) in items">
@@ -29,13 +31,13 @@ Vue.component('note',{
     <span>
         <div id="index" class="note">
             <div class="preview" @click="open(item)">
-                <p>{{item.content.substr(0, 30)}}</p>
-                <p v-show="item.content.length>30">...</p>
-                <p>{{item.content.length}}</p>
+                <p>{{item.content.substr(0, 50)}}</p>
+                <p v-show="item.content.length>50">...</p>
+                <p class="size">{{item.content.length}}</p>
             </div>
             <button id="delete" type="button" @click="deleteNote(item)"> x </button>
         </div>
-        <textarea v-show="item.toggle" v-model="item.content" @change="saveItems(item)"></textarea>
+        <textarea v-show="item.toggle" v-model="item.content" @keypress="saveItems(item)"></textarea>
     </span>
     `,
     methods:{
@@ -72,12 +74,13 @@ let app = new Vue({
                 this.items.splice(index, 1),
                 this.saveItems()
             },
-            delallTask(index){
+            delallNote(){
                 this.items.splice(index),
                 this.saveItems()
             },
             open(item){
-                item.toggle = !item.toggle
+                item.toggle = !item.toggle,
+                this.saveItems()
             },
             saveItems() {
             const parsed = JSON.stringify(this.items)
@@ -90,7 +93,7 @@ let app = new Vue({
             for(let i = 0; i<parsedItems.length; i++)(
                 this.items.push({
                         content : parsedItems[i].content,
-                        toggle: false,
+                        toggle: parsedItems[i].toggle,
                     })
             )
         }
@@ -108,33 +111,51 @@ let app = new Vue({
 body{
     display: flex;
     justify-content: center;
+    background-color: #f1f2f6;
 }
 header{
     display: flex;
+    justify-content: center;
     align-self: center;
 }
 header input{
-    border: 1px solid grey;
-    height: 30px;
-    width: 500px;
+    border: none;
+    height: 70px;
+    width: 80vw;
     font-size: 20px;
-    padding-left: 5px;
+    padding-left: 15px;
+}
+.addForm{
+    border-radius: 10px;
+    margin: 50px 0px;
+    display: flex;
+    justify-content: center;
+    align-self: center;
+    overflow:hidden;
 }
 .addNote{
-    width: 50px;
-    height: 34px;
+    width: 70px;
+    height: 72px;
     background-color: green;
     color: #fff;
     font-weight: bold;
     border: none;
+}
+#deleteall{
+    background-color: red;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    width: 80px;
+    height: 72px;
 }
 #delete{
     background-color: red;
     color: #fff;
     font-weight: bold;
     border: none;
-    width: 30px;
-    height: 30px;
+    width: 70px;
+    height: 70px;
 }
 p{
     margin: 0;
@@ -143,8 +164,8 @@ p{
 }
 .note{
     display: flex;
-    width: 400px;
-    height: 30px;
+    width: 100%;
+    height: 70px;
     justify-content: space-between;
 }
 .preview :first-child{
@@ -157,34 +178,60 @@ p{
     font-size: 10px;
 }
 .preview{
-    width: 370px;
-    border: 1px solid grey;
+    width: 100%;
+    height: 30px;
+    padding: 20px 25px 20px 15px;
+    font-size: 130%;
     display: flex;
-    padding-right: 5px;
+    cursor: pointer;
+}
+.size{
+    padding-right: 15px;
+}
+.size::selection {
+    color:transparent;
 }
 textarea{
     display: flex;
-    width: 394px;
-    border: 1px solid gray;
-    height: 100px;
+    margin-bottom: 40px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+    min-height: 100px;
+    height: fit-content;
     font-size: 15px;
-    padding: 5px;
+    padding: 15px;
+    padding-left: 15px;
+    resize: none;
+    border:none;
+    border-top: 1px solid darkgray;
 }
 button:hover{
     cursor: pointer;
 }
+#app{
+    width: 100%;
+}
 ul{
-    list-style:none;
+    list-style: circle;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 100%;
     margin: 0;
     padding: 0;
 }
+span{
+    height: fit-content;
+}
 li{
-    margin-top: 20px;
-    width: 400px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow:hidden;
+    margin: 10px 0px;
     display: flex;
     flex-direction: column;
 }
